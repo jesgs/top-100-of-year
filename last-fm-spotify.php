@@ -22,6 +22,7 @@ $lastfm_json = json_decode($contents, true);
 $spotify_track_ids = array();
 ?>
 <div class="jumbotron">
+    <a href="authorize.php">Authorize with Spotify</a>
     <ol>
     <?php foreach ($lastfm_json['toptracks']['track'] as $track) :
         $track_artist = $track['name'] . ' ' . $track['artist']['name'];
@@ -62,7 +63,9 @@ $spotify_track_ids = array();
         </li>
     <?php endforeach; ?>
     </ol>
-    <a href="create-playlist.php?tracks=<?php echo urlencode(implode(',', $spotify_track_ids)); ?>">Create Playlist</a>
+    <?php if (filter_input(INPUT_GET, 'token')): ?>
+    <a href="create-playlist.php?access_token=<?php echo filter_input(INPUT_GET, 'token') ?>&tracks=<?php echo urlencode(implode(',', $spotify_track_ids)); ?>">Create Playlist</a>
+    <?php endif; ?>
 </div>
 
 <?php require 'includes/_footer.php';

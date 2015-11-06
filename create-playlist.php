@@ -1,52 +1,42 @@
 <?php
 
-if (empty($_GET))
-    die();
+$access_token = filter_input(INPUT_GET, 'access_token');
+$tracks = explode(',', filter_input(INPUT_GET, 'tracks'));
 
-if (filter_input(INPUT_GET, 'code') == '') {
-   // authorize
-    $url = 'https://accounts.spotify.com/authorize';
+if (!$access_token && !$tracks) die();
 
-    $params = array(
-        'client_id' => SPOTIFY_CLIENT_ID,
-        'response_type' => 'code',
-        'redirect_uri' => 'http://localhost:8080/lastfm-spotify/create-playlist.php',
-        'scopes' => 'playlist-modify-private,playlist-modify-public',
-        'show_dialog' => true,
-    );
+$me_url = 'https://api.spotify.com/v1/me';
+// get user profile first
+$opts = array('http' =>
+    array(
+        'method'  => 'GET',
+        'header'  => "Authorization: Bearer " . $access_token . "\r\n",
+    )
+);
 
-    $auth_url = $url . '?' . http_build_query($params);
-    header("Location: {$auth_url}");
-}
+$context = stream_context_create($opts);
+$result = @file_get_contents($me_url, false, $context);
+$me = json_decode($result);
 
-if (filter_input(INPUT_GET, 'code') !== '') {
-    $token_url = 'https://accounts.spotify.com/api/token';
+// make playlist
+$create_playlist = "https://api.spotify.com/v1/users/{$me->id}/playlists";
 
-    $params = array(
-        'grant_type' => 'authorization_code',
-        'code' => filter_input(INPUT_GET, 'code'),
-        'redirect_uri' => 'http://localhost:8080/lastfm-spotify/create-playlist.php',
-    );
+$playlist_data = array(
+    'name' => 'Top 100 of 2015',
+    'public' => true,
+);
 
-    $postdata = http_build_query($params);
+$opts = array('http' =>
+    array(
+        'method'  => 'POST',
+        'header'  => "Content-Type: application/json\r\n"
+                   . "Authorization: Bearer " . $access_token . "\r\n",
+        'content' => addslashes(json_encode($playlist_data)),
+    )
+);
+$context = stream_context_create($opts);
 
-    $opts = array('http' =>
-        array(
-            'method'  => 'POST',
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n"
-                       . "Authorization: Basic " . base64_encode( SPOTIFY_CLIENT_ID . ':' . SPOTIFY_SECRET) . "\r\n",
-            'content' => $postdata
-        )
-    );
+$result = file_get_contents($create_playlist, false, $context);
+$playlist = json_decode($result);
 
-    $context  = stream_context_create($opts);
-
-    $result = @file_get_contents($token_url, false, $context);
-    $auth = json_decode($result);
-    
-    if (!$auth) {
-        die('Denied');
-    }
-
-    var_dump($auth);
-}
+var_dump($me, $result, $playlist);

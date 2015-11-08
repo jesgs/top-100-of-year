@@ -28,13 +28,14 @@ if (filter_input(INPUT_GET, 'code') !== '') {
 
     $postdata = http_build_query($params);
 
-    $opts = array('http' =>
-        array(
-            'method'  => 'POST',
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n"
-                       . "Authorization: Basic " . base64_encode( SPOTIFY_CLIENT_ID . ':' . SPOTIFY_SECRET) . "\r\n",
-            'content' => $postdata
-        )
+    $opts = array(
+        'http' =>
+            array(
+                'method'  => 'POST',
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n"
+                           . "Authorization: Basic " . base64_encode( SPOTIFY_CLIENT_ID . ':' . SPOTIFY_SECRET) . "\r\n",
+                'content' => $postdata
+            )
     );
 
     $context  = stream_context_create($opts);

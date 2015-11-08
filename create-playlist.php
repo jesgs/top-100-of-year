@@ -26,12 +26,13 @@ $playlist_data = array(
     'public' => true,
 );
 
-$opts = array('http' =>
+$opts = array(
+    'http' =>
     array(
         'method'  => 'POST',
         'header'  => "Content-Type: application/json\r\n"
                    . "Authorization: Bearer " . $access_token . "\r\n",
-        'content' => addslashes(json_encode($playlist_data)),
+        'content' => json_encode($playlist_data),
     )
 );
 $context = stream_context_create($opts);
@@ -39,4 +40,31 @@ $context = stream_context_create($opts);
 $result = file_get_contents($create_playlist, false, $context);
 $playlist = json_decode($result);
 
-var_dump($me, $result, $playlist);
+if (!isset($playlist->id)) {
+    exit;
+}
+
+$track_listing = array();
+foreach ($tracks as $track) {
+    if (!$track) continue;
+    $track_listing[] = "spotify:track:{$track}";
+}
+
+$track_data = array(
+    'uris' => $track_listing,
+);
+
+$playlist_endpoint = "https://api.spotify.com/v1/users/{$me->id}/playlists/{$playlist->id}/tracks";
+$opts = array(
+    'http' =>
+        array(
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/json\r\n"
+                . "Authorization: Bearer " . $access_token . "\r\n",
+            'content' => json_encode($track_data),
+        )
+);
+$context = stream_context_create($opts);
+
+$result = file_get_contents($playlist_endpoint, false, $context);
+$updated_playlist = json_decode($result);

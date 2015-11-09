@@ -1,9 +1,12 @@
 <?php
+session_start();
 
-$access_token = filter_input(INPUT_GET, 'access_token');
+$session_auth = isset($_SESSION['spotify_auth']) ? $_SESSION['spotify_auth'] : false;
+$access_token = isset($session_auth->access_token) ? $session_auth->access_token : false;
+
 $tracks = explode(',', filter_input(INPUT_GET, 'tracks'));
 
-if (!$access_token && !$tracks) die();
+if (!$access_token && !$tracks) die('No session.');
 
 $me_url = 'https://api.spotify.com/v1/me';
 // get user profile first

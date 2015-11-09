@@ -1,6 +1,7 @@
 <?php
 require 'includes/_header.php';
 
+$session_auth = isset($_SESSION['spotify_auth']) ? $_SESSION['spotify_auth'] : false;
 $lastfm_cache_file = 'cache/lastfm.json';
 
 $lastfm_url = 'http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks'
@@ -63,8 +64,8 @@ $spotify_track_ids = array();
         </li>
     <?php endforeach; ?>
     </ol>
-    <?php if (filter_input(INPUT_GET, 'token')): ?>
-    <a href="create-playlist.php?access_token=<?php echo filter_input(INPUT_GET, 'token') ?>&tracks=<?php echo urlencode(implode(',', $spotify_track_ids)); ?>">Create Playlist</a>
+    <?php if (isset($session_auth->access_token)): ?>
+    <a href="create-playlist.php?tracks=<?php echo urlencode(implode(',', $spotify_track_ids)); ?>">Create Playlist</a>
     <?php endif; ?>
 </div>
 

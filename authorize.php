@@ -47,5 +47,7 @@ if (filter_input(INPUT_GET, 'code') !== '') {
         die('Denied');
     }
 
-    header('Location: last-fm-spotify.php?token=' . $auth->access_token);
+    session_start();
+    $_SESSION['spotify_auth'] = $auth;
+    header('Location: last-fm-spotify.php');
 }

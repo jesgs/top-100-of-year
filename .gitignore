@@ -2,3 +2,4 @@
 config.php
 bower_components/
 cache
+node_modules

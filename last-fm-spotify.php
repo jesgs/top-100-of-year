@@ -21,12 +21,13 @@ if (!$contents) {
 }
 $lastfm_json = json_decode($contents, true); 
 $spotify_track_ids = array();
+$track_html = '';
 ?>
 <div class="container-fluid">
     <div class="row">
         <?php foreach ($lastfm_json['toptracks']['track'] as $track) {
             $track_artist = $track['name'] . ' ' . $track['artist']['name'];
-            $cache_file = 'track-' . strtolower(str_replace(' ', '-', $track_artist)) . '.json';
+            $cache_file = 'track-' . strtolower(str_replace(' ', '-', filter_var($track_artist, FILTER_SANITIZE_STRING || FILTER_SANITIZE_SPECIAL_CHARS))) . '.json';
 
             $url_data =  urlencode($track_artist);
             $url = str_replace('{query}', $url_data, $spotify_search_url);

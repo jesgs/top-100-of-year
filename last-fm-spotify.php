@@ -8,7 +8,7 @@ $lastfm_url = 'http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks'
             . '&user=' . LASTFM_USER
             . '&api_key=' . LASTFM_API_KEY
             . '&limit=100' 
-            . '&period=12month'
+            . '&period=6month'
             . '&format=json';
 
 $spotify_search_url = 'https://api.spotify.com/v1/search?q={query}&type=track,artist&market=US';

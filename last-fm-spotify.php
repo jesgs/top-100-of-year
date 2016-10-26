@@ -7,7 +7,7 @@ $lastfm_cache_file = 'cache/lastfm.json';
 $lastfm_url = 'http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks'
             . '&user=' . LASTFM_USER
             . '&api_key=' . LASTFM_API_KEY
-            . '&limit=100' 
+            . '&limit=100'
             . '&period=6month'
             . '&format=json';
 
@@ -15,11 +15,11 @@ $spotify_search_url = 'https://api.spotify.com/v1/search?q={query}&type=track,ar
 
 // cache
 $contents = @file_get_contents($lastfm_cache_file);
-if (!$contents) {    
+if (!$contents) {
     $contents = file_get_contents($lastfm_url);
     file_put_contents($lastfm_cache_file, $contents);
 }
-$lastfm_json = json_decode($contents, true); 
+$lastfm_json = json_decode($contents, true);
 $spotify_track_ids = array();
 $track_html = '';
 ?>
@@ -27,7 +27,9 @@ $track_html = '';
     <div class="row">
         <?php foreach ($lastfm_json['toptracks']['track'] as $track) {
             $track_artist = $track['name'] . ' ' . $track['artist']['name'];
-            $cache_file = 'track-' . strtolower(str_replace(' ', '-', filter_var($track_artist, FILTER_SANITIZE_STRING || FILTER_SANITIZE_SPECIAL_CHARS))) . '.json';
+            $cache_track_artist = strtolower(str_replace(' ', '-', preg_replace('#[[:punct:]]#', '', $track_artist)));
+
+            $cache_file = 'track-' . $cache_track_artist . '.json';
 
             $url_data =  urlencode($track_artist);
             $url = str_replace('{query}', $url_data, $spotify_search_url);
